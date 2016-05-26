@@ -1,0 +1,17 @@
+{
+  "name": "jsPsychHardware",
+  "version": "0.1",
+  "description": "Allows jspsych to access hardware",
+  "background": {
+    "persistent": false,
+    "scripts": ["watch.js"]
+  },
+  "permissions": [
+  	"activeTab"
+  ],
+  "page_action": {
+    "default_title": "",
+    "default_popup": "config.html"
+    
+  }
+}
