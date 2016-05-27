@@ -1,23 +1,23 @@
 {
   "name": "jsPsychHardware",
   "version": "0.1",
+  "manifest_version":2,
   "description": "Allows jspsych to access hardware",
   "background": {
     "persistent": false,
-    "scripts": ["watch.js"]
+    "scripts": ["background.js"]
   },
   "permissions": [
   	"activeTab"
   ],
   "page_action": {
     "default_title": "",
-    "default_popup": "config.html"
-    
+    "default_popup": "popup.html"
   },
   "content_scripts":[
   	{
-  		"matches":["*"],
-  		"js": ["detectjspsych.js"]
+  		"matches":["<all_urls>"],
+  		"js": ["jquery.js", "detectjspsych.js"]
   	}
   ]
 }
