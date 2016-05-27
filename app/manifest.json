@@ -13,5 +13,11 @@
     "default_title": "",
     "default_popup": "config.html"
     
-  }
+  },
+  "content_scripts":[
+  	{
+  		"matches":["*"],
+  		"js": ["detectjspsych.js"]
+  	}
+  ]
 }
