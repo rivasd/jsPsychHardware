@@ -1,6 +1,6 @@
 /**
 * Content Script injected only when user chooses to link the page with hardware through jspsych
-* Should register listeners for message events
+* it's job is mainly to set up a way to communicate with the normal web page javascript and notify everyone
 * 
 * 
 * @see https://developer.chrome.com/extensions/content_scripts#host-page-communication
@@ -8,21 +8,15 @@
 * @author Catherine Prevost
 */
 
-// when injected, leave a mark on the DOM that lets the normal page javascript know that it can now use calls to the hardware extension
-var  jspsychHardwareDiv = $('<div style="display:none;" hidden></div>', {id:"jspsychHardwareDiv"});
-$("body").append(jspsychHardwareDiv);
-
 //open communication to the background.js process of the extension
-var extensionport = chrome.runtime.connect();
+var extensionport = chrome.runtime.connect({name:"jspsychopened"});
 
-//Communication will take place through the window.postMessage functionality of modern browsers. start listening for the event!
-window.addEventListener("message", function(event) {
-	if (event.source != window){
-	    return;
-	}
-	if (event.data.type && (event.data.type == "jspsych")) {
-		console.log("Content script received: " + event.data.text);
-		
-	    port.postMessage(event.data);
-	}
+//Communication will take place through a CustomEvent dispatched on the document object, so start listening!
+document.addEventListener("jspsych", function(event) {
+	var message = event.detail;
+	//simply relay it to the extension, FOR NOW I see no point in doing any computation here...
+	extensionport.postMessage(message);
 }, capture);
+
+//let the page script (the javascript running jspsych) know that we are ready to listen
+$("body").trigger("jspsych:activate");
