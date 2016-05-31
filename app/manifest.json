@@ -8,7 +8,7 @@
     "scripts": ["background.js"]
   },
   "permissions": [
-  	"activeTab".
+  	"activeTab",
   	"nativeMessaging"
   ],
   "page_action": {

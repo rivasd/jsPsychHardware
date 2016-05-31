@@ -9,14 +9,14 @@
 */
 
 //open communication to the background.js process of the extension
-var extensionport = chrome.runtime.connect({name:"jspsychopened"});
+var extensionport = chrome.runtime.connect({name:"jspsych"});
 
 //Communication will take place through a CustomEvent dispatched on the document object, so start listening!
 document.addEventListener("jspsych", function(event) {
 	var message = event.detail;
 	//simply relay it to the extension, FOR NOW I see no point in doing any computation here...
 	extensionport.postMessage(message);
-}, capture);
+});
 
 //let the page script (the javascript running jspsych) know that we are ready to listen
 $("body").trigger("jspsych:activate");

@@ -4,7 +4,7 @@
  */
 function detectJsPsych(){
 	var presence = $("html").attr("jspsych");
-	if(presence === 'true'){
+	if(presence === 'present'){
 		chrome.runtime.sendMessage('jspsych-detected');
 	}
 }

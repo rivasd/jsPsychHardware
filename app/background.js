@@ -28,12 +28,7 @@ chrome.runtime.onConnect.addListener(function(port){
 		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
 		
 		//start listening for messages from jspsych (through our messagepasser.js content-script)
-		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-			if(!sender.tab){
-				//if the message did not originate from the web page, then we do not care about it
-				return;
-			}
-			
+		port.onMessage.addListener(function(request, sender, sendResponse){
 			//we should simply relay the message to the native app, as it probably runs faster than any js code 
 			//especially when we will implement it in C++ rather than Python.
 			if(request.recipient === 'native'){
