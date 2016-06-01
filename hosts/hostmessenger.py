@@ -19,9 +19,13 @@ if sys.platform == "win32":
 
 def main():
     
-    pport = parallel.Parallel()
+    # pport = parallel.Parallel()
     
     stdout = os.fdopen(sys.stdout.fileno(), 'wb')
+    
+    # debugging calls
+    # os.setuid(0)
+    # print(os.getuid())
     
     # Helper function that sends a message to the webapp.
     def send_message(message):

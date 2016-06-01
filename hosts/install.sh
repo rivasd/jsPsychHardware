@@ -33,11 +33,11 @@ cp "$DIR/$HOST_NAME.json" "$TARGET_DIR"
 
 
 # Set directory paths
-HOST_PATH=$DIR/testnative.py
+HOST_PATH=$DIR/unixwrapper.sh
 ESCAPED_HOST_PATH=${HOST_PATH////\\/}
 
 echo "the target directory is $TARGET_DIR"
-echo "the host name is $HOST_NAME"
+echo "the host path is $HOST_PATH"
 
 sed -i -e "s/HOST_PATH/$ESCAPED_HOST_PATH/" "$TARGET_DIR/$HOST_NAME.json"
 # Set permissions for the manifest so that all users can read it.

@@ -29,7 +29,7 @@ chrome.runtime.onConnect.addListener(function(port){
 		
 		
 		nativePort.onDisconnect.addListener(function(){
-			console.log("native disconnected");Psych.pluginAPI.hardware({payload:3, recipient:"native"})
+			console.log("native disconnected");
 		});
 		
 		//start listening for messages from jspsych (through our messagepasser.js content-script)
