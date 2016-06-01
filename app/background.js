@@ -27,10 +27,21 @@ chrome.runtime.onConnect.addListener(function(port){
 		//we might as well start the our native program right now. maybe in the future Google will add more native-like APIs
 		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
 		
+		
+		nativePort.onDisconnect.addListener(function(){
+			console.log("native disconnected");Psych.pluginAPI.hardware({payload:3, recipient:"native"})
+		});
+		
 		//start listening for messages from jspsych (through our messagepasser.js content-script)
 		port.onMessage.addListener(function(request, sender, sendResponse){
 			//we should simply relay the message to the native app, as it probably runs faster than any js code 
 			//especially when we will implement it in C++ rather than Python.
+			if(request === undefined){
+				//we were sent an empty message... what to do???
+				console.log("we got an empty message");
+				return;
+			}
+			
 			if(request.recipient === 'native'){
 				nativePort.postMessage(request);
 			}
@@ -38,10 +49,8 @@ chrome.runtime.onConnect.addListener(function(port){
 				nativePort.disconnect();
 			}
 			
-			//here we can listen from messages back from our native program
-			nativePort.onMessage.addListener(function(mess){
-				//I guess we'll do stuff here... eventually
-			});
+			
+			
 			
 		});
 		
@@ -49,8 +58,8 @@ chrome.runtime.onConnect.addListener(function(port){
 		port.onDisconnect.addListener(function(){
 			nativePort.disconnect();
 			//also, since the user changed to a new page, close the ui
-			chrome.pageAction.hide();
+			//chrome.pageAction.hide();
 		});
-	}
+	};
 });
 
