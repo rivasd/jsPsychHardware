@@ -27,13 +27,24 @@ chrome.runtime.onConnect.addListener(function(port){
 		//we might as well start the our native program right now. maybe in the future Google will add more native-like APIs
 		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
 		
+		var activeTab = port.sender.tab.id;
 		
 		nativePort.onMessage.addListener(function(mess){
+			if(mess.message == "connected"){
+				chrome.pageAction.setIcon({
+					tabId: activeTab,
+					path:"media/jspsych-logo-ok.png"
+				});
+			}
 			console.log(mess);
 		});
 		
 		nativePort.onDisconnect.addListener(function(){
 			console.log("native disconnected");
+			chrome.pageAction.setIcon({
+				tabId: activeTab,
+				path:"media/jspsych-logo-err.png"
+			});
 		});
 		
 		//start listening for messages from jspsych (through our messagepasser.js content-script)
@@ -45,7 +56,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				console.log("we got an empty message");
 				return;
 			}
-			
+
 			if(request.recipient === 'native'){
 				nativePort.postMessage(request);
 			}

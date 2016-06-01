@@ -13,12 +13,13 @@
   ],
   "page_action": {
     "default_title": "",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "media/jspsych-logo.png"
   },
   "content_scripts":[
   	{
   		"matches":["<all_urls>"],
-  		"js": ["jquery.js", "detectjspsych.js"]
+  		"js": ["detectjspsych.js"]
   	}
   ]
 }

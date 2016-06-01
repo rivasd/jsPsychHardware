@@ -9,7 +9,12 @@
 */
 
 //open communication to the background.js process of the extension
-var extensionport = chrome.runtime.connect({name:"jspsych"});
+
+var extensionport;
+if(extensionport === undefined){
+	extensionport = chrome.runtime.connect({name:"jspsych"});
+}
+
 
 //Communication will take place through a CustomEvent dispatched on the document object, so start listening!
 document.addEventListener("jspsych", function(event) {
