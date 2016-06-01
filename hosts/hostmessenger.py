@@ -19,12 +19,12 @@ if sys.platform == "win32":
 
 def main():
     
-    # pport = parallel.Parallel()
+    pport = parallel.Parallel()
     
     stdout = os.fdopen(sys.stdout.fileno(), 'wb')
     
     # debugging calls
-    # os.setuid(0)
+    # os.setuid(0)#!/bin/sh
     # print(os.getuid())
     
     # Helper function that sends a message to the webapp.
@@ -35,7 +35,7 @@ def main():
         stdout.write(bytes(message, 'utf-8'))
         stdout.flush()
     
-    # send_message("connected!")
+    send_message('{"message":"connected"}')
     
     while 1:    #continous loop
         mess_length = sys.stdin.buffer.read(4) #program will block here until something is received
@@ -52,10 +52,10 @@ def main():
         # If we got so far, then we won!
         
         pport.setData(message['payload'])
-        time.sleep(0.003)
+        time.sleep(0.03)
         pport.setData(0)
         
-        send_message({"status": "OK"})
+        send_message('{"status": "OK"}')
         
     pass
 

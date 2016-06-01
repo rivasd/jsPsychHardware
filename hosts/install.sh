@@ -9,12 +9,16 @@ set -e
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 if [ "$(uname -s)" == "Darwin" ]; then
+	echo "installing on MacOSX..."
   if [ "$(whoami)" == "root" ]; then
+	echo "as root!"
     TARGET_DIR="/Library/Google/Chrome/NativeMessagingHosts"
   else
+	echo "as a simple user"
     TARGET_DIR="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
   fi
 else
+	echo "installing on Linux!"
   if [ "$(whoami)" == "root" ]; then
 	echo "You are root! destroyer of worlds!"
     TARGET_DIR="/etc/opt/chrome/native-messaging-hosts"
@@ -26,14 +30,14 @@ fi
 
 HOST_NAME=com.cogcommtl.hardware
 # Create directory to store native messaging host.
-mkdir -p "$TARGET_DIR"
-# Copy native messaging host manifest.
+mkdir -p "$TARGET_DIR"#!/bin/bash
+# Copy native messaging host manifest.connected!
 cp "$DIR/$HOST_NAME.json" "$TARGET_DIR"
-# Update host path in the manifest.o "the host name is $HOST_NAME"
+# Update host path in the manifest.o "
 
 
-# Set directory paths
-HOST_PATH=$DIR/unixwrapper.sh
+# Set directory pathsunixwrapper.sh
+HOST_PATH=$DIR/hostmessenger.py
 ESCAPED_HOST_PATH=${HOST_PATH////\\/}
 
 echo "the target directory is $TARGET_DIR"

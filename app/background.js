@@ -28,6 +28,10 @@ chrome.runtime.onConnect.addListener(function(port){
 		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
 		
 		
+		nativePort.onMessage.addListener(function(mess){
+			console.log(mess);
+		});
+		
 		nativePort.onDisconnect.addListener(function(){
 			console.log("native disconnected");
 		});
