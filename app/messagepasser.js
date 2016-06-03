@@ -24,4 +24,4 @@ document.addEventListener("jspsych", function(event) {
 });
 
 //let the page script (the javascript running jspsych) know that we are ready to listen
-$("body").trigger("jspsych:activate");
+document.dispatchEvent(new CustomEvent("jspsych-activate"));
