@@ -8,6 +8,12 @@
  * like this one that only executes when needed goes down the drain...
  */
 
+
+var status = {
+		parallel: false
+};
+
+
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	if(sender.tab && request === 'jspsych-detected'){
