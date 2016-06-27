@@ -2,12 +2,35 @@
 <head>
 	<script src="jquery.js"></script>
 	<script src="popup.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-<img class="h-center" id="imgtitre" alt="jspsych" src="media/jspsych-logo-readme.jpg">
-
-<button id="activate" class="h-center">Access Hardware</button>
+	<img class="h-center" id="imgtitre" alt="jspsych" src="media/jspsych-logo-readme.jpg">
+	<form id="status-form">
+		<fieldset class="hardware-entry">
+			<table>
+				<tr>
+					<td class="hardware-name" id="parallel-name">Parallel Port</td>
+					<td class="hardware-status" id="parallel-status"> 
+						<div class="onoffswitch">
+							
+						</div>
+					</td>
+				</tr>
+				<tr class="hardware-setup" id="parallel-setup">
+					<td class="label">
+						<label>Enter parallel port base address</label>
+					</td>
+					<td>
+						<input type="text" class="hardware-text" id="parallel-address">
+						<a href="http://lcdhype.condense.de/index.php?showtopic=5018">?</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</form>
+	<button id="activate" class="h-center">Access Hardware</button>
 
 </body>
 
