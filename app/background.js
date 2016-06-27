@@ -57,8 +57,11 @@ chrome.runtime.onConnect.addListener(function(port){
 				return;
 			}
 
-			if(request.recipient === 'native'){
+			if(!request.recipient === 'extension'){
 				nativePort.postMessage(request);
+			}
+			else{
+				//do something extension-ish
 			}
 			if(request === "closeNative"){
 				nativePort.disconnect();
