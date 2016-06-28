@@ -9,7 +9,8 @@
   },
   "permissions": [
   	"activeTab",
-  	"nativeMessaging"
+  	"nativeMessaging",
+  	"storage"
   ],
   "page_action": {
     "default_title": "",

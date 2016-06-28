@@ -68,3 +68,9 @@ table{
 	table-layout: fixed;
 	width:100%;
 }
+.on{
+	background-color: gree;
+}
+.off{
+	background-color:red;
+}

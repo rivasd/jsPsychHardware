@@ -11,12 +11,13 @@ $(function(){
 		chrome.tabs.executeScript({file:"messagepasser.js"});
 		//open port with background page
 		backgroundPort = chrome.runtime.connect({name: "popup"});
+		//
+		$("div.onoffswitch").data("active", false).addClass("off");
 	}
 	
 	function syncState(){
-		status = chrome.runtime.getBackgroundPage(function(page){
-			status = page.status
-		});
+		
+
 	};
 	
 	var testcount =0;
@@ -30,7 +31,16 @@ $(function(){
 	
 	$("div.onoffswitch").click(function(evt){
 		var device = $(this).parent().attr("id").split("-")[0];
-		testcount++;
-		syncState();
+		switch (device) {
+		case "parallel":
+			
+			break;
+
+		default:
+			break;
+		}
 	});
+	
+	
+	init();
 });

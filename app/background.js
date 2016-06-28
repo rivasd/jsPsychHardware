@@ -21,16 +21,23 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	if(sender.tab && request === 'jspsych-detected'){
 		chrome.pageAction.show(sender.tab.id);
 	}
+
 });
 
 chrome.runtime.onConnect.addListener(function(port){
+	
+	if(typeof nativePort === 'undefined'){
+		var nativePort;
+	}
 	
 	//The code below deals only with communications from the web page (through messagepasser.js)
 	//the distiction is made explicit because it is possible that other things want to connect to the background script
 	if(port.name == "jspsych"){
 		//here we should open up the native messaging port, and then test it
 		//remember that this page will not close as long as this port is not closed
-		var nativePort = chrome.runtime.connectNative("com.cogcommtl.hardware");
+		if(typeof nativePort === 'undefined'){
+			nativePort = chrome.runtime.connectNative("com.cogcommtl.hardware");
+		}
 		//for now, chrome extensions do not expose any useful native API like apps do (why???!??!), this means that
 		//we might as well start the our native program right now. maybe in the future Google will add more native-like APIs
 		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
@@ -53,30 +60,33 @@ chrome.runtime.onConnect.addListener(function(port){
 				tabId: activeTab,
 				path:"media/jspsych-logo-err.png"
 			});
+			nativePort = undefined;
 		});
 		
-		//start listening for messages from jspsych (through our messagepasser.js content-script)
-		port.onMessage.addListener(function(request, sender, sendResponse){
-			//we should simply relay the message to the native app, as it probably runs faster than any js code 
-			//especially when we will implement it in C++ rather than Python.
-			if(request === undefined){
-				//we were sent an empty message... what to do???
-				console.log("we got an empty message");
-				return;
-			}
-
-			if(!request.recipient === 'extension'){
-				nativePort.postMessage(request);
+		//start listening for messages
+		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+			
+			//deal only with messages from content-scripts or the popup, reject anything else
+			if(sender.tab.id === activeTab || sender.id === chrome.runtime.id){
+				
+				if(request === undefined){
+					//we were sent an empty message... what to do???
+					console.log("we got an empty message");
+					return;
+				}
+				if(!request.target === 'extension'){
+					nativePort.postMessage(request);
+				}
+				else{
+					//do something extension-ish
+				}
+				if(request === "closeNative"){
+					nativePort.disconnect();
+				}
 			}
 			else{
-				//do something extension-ish
+				console.log("communication attempted by other extension/app. Denied");
 			}
-			if(request === "closeNative"){
-				nativePort.disconnect();
-			}
-			
-			
-			
 			
 		});
 		
