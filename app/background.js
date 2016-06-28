@@ -9,9 +9,11 @@
  */
 
 
-var status = {
-		parallel: false
-};
+//setup persistent store for addresses and state of multiple hardware
+chrome.storage.local.set({
+	"state-parallel": false,
+	"port-parallel": "0x378"
+});
 
 
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
