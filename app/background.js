@@ -63,11 +63,9 @@ chrome.runtime.onConnect.addListener(function(port){
 			nativePort = undefined;
 		});
 		
-		//start listening for messages
-		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-			
+		function process(request, sender, sendResponse){
 			//deal only with messages from content-scripts or the popup, reject anything else
-			if(sender.tab.id === activeTab || sender.id === chrome.runtime.id){
+			if(sender.id === chrome.runtime.id || (sender.tab && sender.tab.id === activeTab)){
 				
 				if(request === undefined){
 					//we were sent an empty message... what to do???
@@ -87,8 +85,11 @@ chrome.runtime.onConnect.addListener(function(port){
 			else{
 				console.log("communication attempted by other extension/app. Denied");
 			}
-			
-		});
+		}
+		
+		//start listening for messages
+		chrome.runtime.onMessage.addListener(process);
+		port.onMessage.addListener(process);
 		
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
