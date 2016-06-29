@@ -64,6 +64,11 @@ chrome.runtime.onConnect.addListener(function(port){
 		});
 		
 		function process(request, sender, sendResponse){
+			//the sender might actually be a port, which screws with the check below. luckily the port will itself have a Sender object
+			if(sender.sender){
+				sender = sender.sender;
+			}
+			
 			//deal only with messages from content-scripts or the popup, reject anything else
 			if(sender.id === chrome.runtime.id || (sender.tab && sender.tab.id === activeTab)){
 				
@@ -72,7 +77,7 @@ chrome.runtime.onConnect.addListener(function(port){
 					console.log("we got an empty message");
 					return;
 				}
-				if(!request.target === 'extension'){
+				if(!(request.target === 'extension')){
 					nativePort.postMessage(request);
 				}
 				else{
