@@ -10,6 +10,13 @@
 
 //open communication to the background.js process of the extension
 
+chrome.runtime.onMessage.addListener(function(mess, sender, sendResponse){
+	if(mess === 'isLoaded'){
+		sendResponse({message:'loaded'});
+	}
+})
+
+
 var extensionport;
 if(extensionport === undefined){
 	extensionport = chrome.runtime.connect({name:"jspsych"});

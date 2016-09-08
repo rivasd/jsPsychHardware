@@ -11,24 +11,19 @@
 
 //setup persistent store for addresses and state of multiple hardware
 chrome.storage.local.set({
-	"state-parallel": false,
-	"port-parallel": "0x378"
+	"state-parallel": false
 });
 
+var nativePort;
 
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	if(sender.tab && request === 'jspsych-detected'){
 		chrome.pageAction.show(sender.tab.id);
 	}
-
 });
 
 chrome.runtime.onConnect.addListener(function(port){
-	
-	if(typeof nativePort === 'undefined'){
-		var nativePort;
-	}
 	
 	//The code below deals only with communications from the web page (through messagepasser.js)
 	//the distiction is made explicit because it is possible that other things want to connect to the background script
@@ -80,7 +75,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				if(!(request.target === 'extension')){
 					nativePort.postMessage(request);
 				}
-				else{
+				else if(request.target == 'extension'){
 					//do something extension-ish
 				}
 				if(request === "closeNative"){
@@ -93,15 +88,15 @@ chrome.runtime.onConnect.addListener(function(port){
 		}
 		
 		//start listening for messages
-		chrome.runtime.onMessage.addListener(process);
-		port.onMessage.addListener(process);
 		
+		port.onMessage.addListener(process);
+		chrome.runtime.onMessage.addListener(process);
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
 			nativePort.disconnect();
 			//also, since the user changed to a new page, close the ui
 			//chrome.pageAction.hide();
 		});
-	};
+	}
 });
 

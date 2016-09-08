@@ -7,13 +7,35 @@ $(function(){
 	
 	function init(){
 		//inject content scri[ts
-		chrome.tabs.executeScript({file:"jquery.js"});
-		chrome.tabs.executeScript({file:"messagepasser.js"});
+		chrome.tabs.query({
+			active:true,
+			currentWindow:true
+		}, function(tabs){
+			var currTab = tabs[0];
+			chrome.tabs.sendMessage(currTab.id, 'isLoaded', function(resp){
+				if(resp){
+					// do nothing, scripts already injected
+				}
+				else{
+					chrome.tabs.executeScript({file:"jquery.js"});
+					chrome.tabs.executeScript({file:"messagepasser.js"});
+				}
+			});
+		});
+		
 		//open port with background page
 		backgroundPort = chrome.runtime.connect({name: "popup"});
 		//
 		$("div.onoffswitch").data("active", false).addClass("off");
-	}
+		
+		//load the port address field with previously saved value
+		chrome.storage.local.get('port-parallel', function(items){
+			if(!chrome.runtime.lastError){
+				$("#port-parallel").val(items['port-parallel']);
+			}
+			
+		});
+	};
 	
 	function syncState(){
 		
@@ -24,9 +46,19 @@ $(function(){
 	
 	$("#activate").click(function(evt){
 		//TODO: check if already running
+		chrome.runtime.sendMessage({
+			target: 'hardware',
+			action: 'setup',
+			payload: $("#port-parallel").val()
+		});
+		
+		chrome.storage.local.set({
+			'port-parallel': $("#port-parallel").val()
+		});
 		
 		window.close();
 		$(this).hide();
+
 	});
 	
 	$("div.onoffswitch").click(function(evt){
