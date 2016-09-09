@@ -48,7 +48,7 @@ $(function(){
 		//TODO: check if already running
 		if($("#port-parallel").val()){
 			chrome.runtime.sendMessage({
-				target: 'hardware',
+				target: 'parallel',
 				action: 'setup',
 				payload: "0x"+$("#port-parallel").val()
 			});
