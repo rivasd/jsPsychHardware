@@ -46,15 +46,16 @@ $(function(){
 	
 	$("#activate").click(function(evt){
 		//TODO: check if already running
-		chrome.runtime.sendMessage({
-			target: 'hardware',
-			action: 'setup',
-			payload: $("#port-parallel").val()
-		});
-		
-		chrome.storage.local.set({
-			'port-parallel': $("#port-parallel").val()
-		});
+		if($("#port-parallel").val()){
+			chrome.runtime.sendMessage({
+				target: 'hardware',
+				action: 'setup',
+				payload: "0x"+$("#port-parallel").val()
+			});
+			chrome.storage.local.set({
+				'port-parallel': $("#port-parallel").val()
+			});
+		};
 		
 		window.close();
 		$(this).hide();
