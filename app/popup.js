@@ -37,11 +37,6 @@ $(function(){
 		});
 	};
 	
-	function syncState(){
-		
-
-	};
-	
 	var testcount =0;
 	
 	$("#activate").click(function(evt){
@@ -62,16 +57,9 @@ $(function(){
 
 	});
 	
-	$("div.onoffswitch").click(function(evt){
-		var device = $(this).parent().attr("id").split("-")[0];
-		switch (device) {
-		case "parallel":
-			
-			break;
-
-		default:
-			break;
-		}
+	$("a").click(function(evt){
+		chrome.tabs.create({url:this.href});
+		return false;
 	});
 	
 	

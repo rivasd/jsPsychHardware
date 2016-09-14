@@ -15,6 +15,7 @@ chrome.storage.local.set({
 });
 
 var nativePort;
+var activeTab;
 
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -28,41 +29,61 @@ chrome.runtime.onConnect.addListener(function(port){
 	//The code below deals only with communications from the web page (through messagepasser.js)
 	//the distiction is made explicit because it is possible that other things want to connect to the background script
 	if(port.name == "jspsych"){
+		
+
+		//We must handle user actions on the tab that used the extension, like refreshs, navigating to other tabs that still contain jsPsych,
+		//All the while trying to maintain a coherent connection to the native app and only a single instance of it
+		if(activeTab === undefined){
+			//this is the 'first time' the extension is invoked, so remember the tab that invoked it, we will assume it is the one that will 
+			//be used, exclusively, by the user
+			activeTab = port.sender.tab.id;
+			
+			//attach the event listener only once, when the 'working tab' is remembered
+			chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
+				if(tabId === activeTab){
+					//close everything
+					nativePort.disconnect();
+					nativePort = undefined;
+					activeTab = undefined;
+				};
+			});
+		};
+		
 		//here we should open up the native messaging port, and then test it
 		//remember that this page will not close as long as this port is not closed
-		if(typeof nativePort === 'undefined'){
+		if(nativePort === undefined){
 			nativePort = chrome.runtime.connectNative("com.cogcommtl.hardware");
-		}
-		//for now, chrome extensions do not expose any useful native API like apps do (why???!??!), this means that
-		//we might as well start the our native program right now. maybe in the future Google will add more native-like APIs
-		//for extensions, or maybe we'll decide to use yet another (sigh) middleman: a Chrome App
-		
-		var activeTab = port.sender.tab.id;
-		
-		nativePort.onMessage.addListener(function(mess){
-			if(mess.message == "connected"){
+			
+			nativePort.onMessage.addListener(function(mess){
+				if(mess.message == "connected"){
+					chrome.pageAction.setIcon({
+						tabId: activeTab,
+						path:"media/jspsych-logo-ok.png"
+					});
+				}
+				console.log(mess);
+			});
+			
+			nativePort.onDisconnect.addListener(function(){
+				console.log("native disconnected");
 				chrome.pageAction.setIcon({
 					tabId: activeTab,
-					path:"media/jspsych-logo-ok.png"
+					path:"media/jspsych-logo-err.png"
 				});
-			}
-			console.log(mess);
-		});
-		
-		nativePort.onDisconnect.addListener(function(){
-			console.log("native disconnected");
-			chrome.pageAction.setIcon({
-				tabId: activeTab,
-				path:"media/jspsych-logo-err.png"
+				nativePort = undefined;
 			});
-			nativePort = undefined;
-		});
+		}
 		
 		function process(request, sender, sendResponse){
 			//the sender might actually be a port, which screws with the check below. luckily the port will itself have a Sender object
 			if(sender.sender){
 				sender = sender.sender;
 			}
+			//ignore the jspsych-detected message that is dealt with earlier
+			if(request === 'jspsych-detected'){
+				return;
+			}
+			
 			
 			//deal only with messages from content-scripts or the popup, reject anything else
 			if(sender.id === chrome.runtime.id || (sender.tab && sender.tab.id === activeTab)){
@@ -94,6 +115,7 @@ chrome.runtime.onConnect.addListener(function(port){
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
 			nativePort.disconnect();
+			nativePort = undefined;
 			//also, since the user changed to a new page, close the ui
 			//chrome.pageAction.hide();
 		});
