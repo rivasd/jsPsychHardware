@@ -14,7 +14,12 @@ chrome.storage.local.set({
 	"state-parallel": false
 });
 
+/**@type {chrome.runtime.nativePort} */
 var nativePort;
+
+/**@type {chrome.runtime.Port} */
+var popupPort;
+
 var activeTab;
 
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
@@ -26,9 +31,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
 chrome.runtime.onConnect.addListener(function(port){
 	
+
+	if(port.name == "popup"){
+		popupPort = port;
+	}
 	//The code below deals only with communications from the web page (through messagepasser.js)
 	//the distiction is made explicit because it is possible that other things want to connect to the background script
-	if(port.name == "jspsych"){
+	else if(port.name == "jspsych"){
 		
 
 		//We must handle user actions on the tab that used the extension, like refreshs, navigating to other tabs that still contain jsPsych,
@@ -60,6 +69,10 @@ chrome.runtime.onConnect.addListener(function(port){
 						tabId: activeTab,
 						path:"media/jspsych-logo-ok.png"
 					});
+				}
+				else if(mess.code === "serial"){
+					//possible that we received some message through the COM port!
+					popupPort.postMessage(mess);
 				}
 				console.log(mess);
 			});
@@ -98,6 +111,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				}
 				else if(request.target == 'extension'){
 					//do something extension-ish
+
 				}
 				if(request === "closeNative"){
 					nativePort.disconnect();
@@ -115,7 +129,9 @@ chrome.runtime.onConnect.addListener(function(port){
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
 			nativePort.disconnect();
+			popupPort.disconnect();
 			nativePort = undefined;
+			popupPort = undefined;
 			//also, since the user changed to a new page, close the ui
 			//chrome.pageAction.hide();
 		});

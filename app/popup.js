@@ -1,8 +1,9 @@
 
 $(function(){
 	
-	
+	/**@type {chrome.runtime.Port} */
 	var backgroundPort;
+
 	var status;
 	
 	function init(){
@@ -35,6 +36,31 @@ $(function(){
 			}
 			
 		});
+
+		//handle some common messages back from the main background script
+		backgroundPort.onMessage.addListener(function(msg){
+			if(msg.code === "serial"){
+				if(msg.ports){
+					//we have received an updated list of available COM ports, update the <select> element
+					var availablePorts = $("#serial-ports-list").empty();
+					msg.ports.forEach(function(port){
+						availablePorts.append($("<option>", {
+							value: port,
+							text: port
+						}));
+					})
+				}
+			}
+		});
+
+		//build the list of available COM ports
+		backgroundPort.postMessage({
+			"target": "serial",
+			"action": "list",
+			"payload":"COM"
+		});
+
+		
 	};
 	
 	var testcount =0;
@@ -63,5 +89,7 @@ $(function(){
 	});
 	
 	
+	
+
 	init();
 });
