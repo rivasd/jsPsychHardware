@@ -1,9 +1,0 @@
-{
-  "name": "com.cogcommtl.hardware",
-  "description": "A program that exposes hardware I/O to chrome extensions so that they can communicate with lab equipment!",
-  "path": "HOST_PATH",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://pmmmpleiogoaeboemphppmjbpaigmodh/"
-  ]
-}
