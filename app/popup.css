@@ -69,8 +69,29 @@ table{
 	width:100%;
 }
 .on{
-	background-color: gree;
+	color: green;
 }
 .off{
-	background-color:red;
+	color:red;
+}
+.hardware-status{
+	color:#555555
+}
+
+@keyframes shadow{
+	to {
+		text-shadow: 0 0 10px rgb(100, 100, 100);
+	}
+}
+
+.loading{
+	animation:	
+		shadow
+		0.5s
+		ease-out
+		0s
+		alternate
+		infinite
+		none
+		running;
 }

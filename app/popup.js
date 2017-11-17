@@ -1,70 +1,83 @@
 
-$(function(){
-	
-	/**@type {chrome.runtime.Port} */
-	var backgroundPort;
+/**@type {JQuery} */
+var serialState;
 
-	var status;
+/**@type {chrome.runtime.Port} */
+var backgroundPort;
+
+function init(tabs){
 	
-	function init(){
-		//inject content scri[ts
-		chrome.tabs.query({
-			active:true,
-			currentWindow:true
-		}, function(tabs){
-			var currTab = tabs[0];
-			chrome.tabs.sendMessage(currTab.id, 'isLoaded', function(resp){
-				if(resp){
-					// do nothing, scripts already injected
+	chrome.runtime.sendMessage({tabId:tabs[0].id});
+
+
+	//open port with background page
+	backgroundPort = chrome.runtime.connect({name: "popup"});
+	//
+	
+	
+	//load the port address field with previously saved value
+	chrome.storage.local.get('port-parallel', function(items){
+		if(!chrome.runtime.lastError){
+			$("#port-parallel").val(items['port-parallel']);
+		}
+		
+	});
+
+	/***********************  Initialization for the serial port UI ******************************/
+
+	serialState = $("#state-serial").addClass("loading");
+
+	//handle some common messages back from the main background script
+	backgroundPort.onMessage.addListener(function(msg){
+		if(msg.code === "serial"){
+			if(msg.ports){
+
+				var selectElem = document.getElementById("serial-ports-list");
+
+				serialState.removeClass("loading");
+				//we have received an updated list of available COM ports, update the <select> element
+				var availablePorts = $("#serial-ports-list").empty();
+				availablePorts.append($("<option>",{
+					text: "None",
+					selected: "true",
+					value:"None"
+				}));
+				msg.ports.forEach(function(port){
+					availablePorts.append($("<option>", {
+						value: port.substring(3),
+						text: port
+					}));
+				});
+			}
+			else if(msg.result == "connected"){
+				
+				if(msg.name && selectElem.options[selectElem.selectedIndex].value == msg.name.substring(2)){
+					serialState.removeClass('loading').addClass("on");
 				}
 				else{
-					chrome.tabs.executeScript({file:"jquery.js"});
-					chrome.tabs.executeScript({file:"messagepasser.js"});
-				}
-			});
-		});
-		
-		//open port with background page
-		backgroundPort = chrome.runtime.connect({name: "popup"});
-		//
-		$("div.onoffswitch").data("active", false).addClass("off");
-		
-		//load the port address field with previously saved value
-		chrome.storage.local.get('port-parallel', function(items){
-			if(!chrome.runtime.lastError){
-				$("#port-parallel").val(items['port-parallel']);
-			}
-			
-		});
-
-		//handle some common messages back from the main background script
-		backgroundPort.onMessage.addListener(function(msg){
-			if(msg.code === "serial"){
-				if(msg.ports){
-					//we have received an updated list of available COM ports, update the <select> element
-					var availablePorts = $("#serial-ports-list").empty();
-					msg.ports.forEach(function(port){
-						availablePorts.append($("<option>", {
-							value: port,
-							text: port
-						}));
-					})
+					serialState.removeClass("loading").addClass("off")
 				}
 			}
-		});
+			else if(msg.result == "disconnected"){
+				serialState.removeClass("on off loading");
+			}
+		}
+	});
 
-		//build the list of available COM ports
-		backgroundPort.postMessage({
-			"target": "serial",
-			"action": "list",
-			"payload":"COM"
-		});
+	//build the list of available COM ports
+	backgroundPort.postMessage({
+		"target": "serial",
+		"action": "list",
+		"payload":"COM"
+	});
+	
+};
 
-		
-	};
+
+$(function(){
 	
 	var testcount =0;
-	
+
 	$("#activate").click(function(evt){
 		//TODO: check if already running
 		if($("#port-parallel").val()){
@@ -87,9 +100,30 @@ $(function(){
 		chrome.tabs.create({url:this.href});
 		return false;
 	});
-	
-	
+
+	//Implement opening the serial port whenever the user selects one from the available list
+	$("#serial-ports-list").change(function(evt){
+		serialState.removeClass("on off");
+		var portNmb = this.options[this.selectedIndex].value;
+		document.getElementById("state-serial").classList.add("loading");
+		if(portNmb != "None"){
+			
+			backgroundPort.postMessage({
+				target: "serial",
+				action: "connect",
+				payload: portNmb
+			});
+		}
+		else{
+			//selecting the None option should release any previous COM connection
+			backgroundPort.postMessage({
+				target: "serial",
+				action: "disconnect",
+				payload: portNmb
+			});
+		}
+	});
 	
 
-	init();
+	chrome.tabs.query({active:true, currentWindow:true}, init);
 });

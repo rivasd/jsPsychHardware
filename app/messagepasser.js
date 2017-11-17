@@ -30,5 +30,11 @@ document.addEventListener("jspsych", function(event) {
 	extensionport.postMessage(message);
 });
 
+//the extension can now send data back to the webpage!
+extensionport.onMessage.addListener(function(msg){
+	document.dispatchEvent(new CustomEvent("jspsych-hardware-message", {message: msg}))
+})
+
+
 //let the page script (the javascript running jspsych) know that we are ready to listen
 document.dispatchEvent(new CustomEvent("jspsych-activate"));

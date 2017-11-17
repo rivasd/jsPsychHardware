@@ -3,6 +3,7 @@
 	<script src="jquery.js"></script>
 	<script src="popup.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
@@ -12,20 +13,20 @@
 		<fieldset class="hardware-entry">
 			<table>
 				<tr>
-					<td class="hardware-name" id="parallel-name">Parallel Port</td>
-					<td class="hardware-status"> 
-						<div class="onoffswitch" id="state-parallel">
-							
-						</div>
-					</td>
+					
 				</tr>
 				<tr class="hardware-setup" id="parallel-setup">
+					<td class="hardware-name" id="parallel-name">Parallel Port</td>
+					
 					<td class="label">
 						<label>port address</label>
 					</td>
 					<td>
 						<input type="text" class="hardware-text" id="port-parallel" maxlength="4" size="4">
 						<a href="http://www.radiosky.com/skypipehelp/V2/parallel_port_configuration.html">?</a>
+					</td>
+					<td class="hardware-status">
+						<i class="fa fa-power-off" aria-hidden="true" id="state-parallel"></i>
 					</td>
 				</tr>
 				<tr class="hardware-setup" id="serial-setup">
@@ -36,6 +37,9 @@
 						<select id="serial-ports-list">
 							<option></option>
 						</select>
+					</td>
+					<td class="hardware-status">
+						<i class="fa fa-power-off" aria-hidden="true" id="state-serial"></i>
 					</td>
 				</tr>
 			</table>
