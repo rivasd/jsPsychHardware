@@ -1,7 +1,7 @@
 body {
-	width: 200px;
+	width: 224px;
 	font-family: 'Varela Round', sans-serif;
-	margin:1px;
+	margin: 5px;
 }
 
 #imgtitre{
@@ -50,6 +50,7 @@ fieldset{
 	padding:0px;
 	margin:0px;
 	border: none;
+	/* font-size: large; */
 }
 
 div.onoffswitch{
@@ -61,21 +62,22 @@ div.onoffswitch{
 }
 
 td{
-	font-size: 8pt;
+	font-size: inherit;
 }
 
 table{
-	table-layout: fixed;
+	/* table-layout: fixed; */
 	width:100%;
+	font-size: 14px;
 }
 .on{
-	color: green;
+	color: #53e653;
 }
 .off{
 	color:red;
 }
 .hardware-status{
-	color:#555555
+	color:#555555;
 }
 
 @keyframes shadow{

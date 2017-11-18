@@ -30,10 +30,10 @@ function init(tabs){
 	//handle some common messages back from the main background script
 	backgroundPort.onMessage.addListener(function(msg){
 		if(msg.code === "serial"){
+
+			var selectElem = document.getElementById("serial-ports-list");
+
 			if(msg.ports){
-
-				var selectElem = document.getElementById("serial-ports-list");
-
 				serialState.removeClass("loading");
 				//we have received an updated list of available COM ports, update the <select> element
 				var availablePorts = $("#serial-ports-list").empty();
@@ -51,15 +51,18 @@ function init(tabs){
 			}
 			else if(msg.result == "connected"){
 				
-				if(msg.name && selectElem.options[selectElem.selectedIndex].value == msg.name.substring(2)){
+				if(msg.name && selectElem.options[selectElem.selectedIndex].value == msg.name.substring(3)){
 					serialState.removeClass('loading').addClass("on");
 				}
 				else{
-					serialState.removeClass("loading").addClass("off")
+					serialState.removeClass("loading").addClass("off");
 				}
 			}
 			else if(msg.result == "disconnected"){
 				serialState.removeClass("on off loading");
+			}
+			else if(msg.error){
+				serialState.removeClass("loading").addClass("off");
 			}
 		}
 	});

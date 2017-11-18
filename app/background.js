@@ -46,7 +46,7 @@ function process(request, sender, sendResponse){
 			console.log("we got an empty message");
 			return;
 		}
-		if(!(request.target === 'extension')){
+		else if(!(request.target === 'extension')){
 			nativePort.postMessage(request);
 		}
 		else if(request.target == 'extension'){
