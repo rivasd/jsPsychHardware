@@ -1,5 +1,5 @@
 body {
-	width: 224px;
+	width: 199px;
 	font-family: 'Varela Round', sans-serif;
 	margin: 5px;
 }
@@ -63,11 +63,12 @@ div.onoffswitch{
 
 td{
 	font-size: inherit;
+	height: 27px;
 }
 
 table{
 	/* table-layout: fixed; */
-	width:100%;
+	width: 93%;
 	font-size: 14px;
 }
 .on{
@@ -78,6 +79,7 @@ table{
 }
 .hardware-status{
 	color:#555555;
+	cursor: pointer;
 }
 
 @keyframes shadow{

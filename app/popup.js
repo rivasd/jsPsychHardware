@@ -73,8 +73,6 @@ function init(tabs){
 
 	//build the list of available COM ports
 	serialState = $("#state-serial").addClass("loading");
-
-	
 };
 
 
@@ -82,7 +80,7 @@ $(function(){
 	
 	var testcount =0;
 
-	$("#activate").click(function(evt){
+	$("#state-parallel").click(function(evt){
 		//TODO: check if already running
 		if($("#port-parallel").val()){
 			chrome.runtime.sendMessage({

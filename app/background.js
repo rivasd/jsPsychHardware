@@ -138,6 +138,7 @@ chrome.runtime.onConnect.addListener(function(port){
 			
 			nativePort.onDisconnect.addListener(function(){
 				console.log("native disconnected");
+				currCOMPort = undefined;
 				chrome.pageAction.setIcon({
 					tabId: activeTab,
 					path:"media/jspsych-logo-err.png"
@@ -156,6 +157,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				nativePort.disconnect();
 				nativePort = undefined;
 				activeTab = undefined;
+				currCOMPort = undefined;
 			};
 		});
 
@@ -197,6 +199,7 @@ chrome.runtime.onConnect.addListener(function(port){
 			
 			nativePort = undefined;
 			popupPort = undefined;
+			currCOMPort = undefined;
 			//also, since the user changed to a new page, close the ui
 			//chrome.pageAction.hide();
 		});
