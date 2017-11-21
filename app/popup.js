@@ -5,6 +5,8 @@ var serialState;
 /**@type {chrome.runtime.Port} */
 var backgroundPort;
 
+var currCOMPort;
+
 function init(tabs){
 	
 	chrome.runtime.sendMessage({tabId:tabs[0].id});
@@ -25,7 +27,8 @@ function init(tabs){
 
 	/***********************  Initialization for the serial port UI ******************************/
 
-	serialState = $("#state-serial").addClass("loading");
+
+	
 
 	//handle some common messages back from the main background script
 	backgroundPort.onMessage.addListener(function(msg){
@@ -48,15 +51,16 @@ function init(tabs){
 						text: port
 					}));
 				});
+
+				//now that we have the list of available ports, show the currently connected one if there is onw
+				backgroundPort.postMessage({target:'extension', action:'state', 'payload':'serial'});
+				
 			}
 			else if(msg.result == "connected"){
-				
-				if(msg.name && selectElem.options[selectElem.selectedIndex].value == msg.name.substring(3)){
-					serialState.removeClass('loading').addClass("on");
-				}
-				else{
-					serialState.removeClass("loading").addClass("off");
-				}
+				selectElem.querySelector('option[value="' + msg.name.substring(3)+'"]').selected = true;
+				serialState.removeClass('loading').addClass("on");
+				currCOMPort = msg.name.substring(3);
+
 			}
 			else if(msg.result == "disconnected"){
 				serialState.removeClass("on off loading");
@@ -68,11 +72,8 @@ function init(tabs){
 	});
 
 	//build the list of available COM ports
-	backgroundPort.postMessage({
-		"target": "serial",
-		"action": "list",
-		"payload":"COM"
-	});
+	serialState = $("#state-serial").addClass("loading");
+
 	
 };
 

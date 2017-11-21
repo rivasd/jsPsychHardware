@@ -25,11 +25,15 @@ var webpagePort;
 
 var activeTab;
 
-
+var currCOMPort;
 
 function process(request, sender, sendResponse){
 	//the sender might actually be a port, which screws with the check below. luckily the port will itself have a Sender object
+
+	var senderPort;
+
 	if(sender.sender){
+		senderPort = sender;
 		sender = sender.sender;
 	}
 	//ignore the jspsych-detected message that is dealt with earlier
@@ -51,7 +55,15 @@ function process(request, sender, sendResponse){
 		}
 		else if(request.target == 'extension'){
 			//do something extension-ish
-
+			if(request.action == 'state' && request.payload == 'serial' && senderPort){
+				if(currCOMPort){
+					senderPort.postMessage({
+						result: 'connected',
+						name: 'COM'+currCOMPort,
+						code:'serial'
+					});
+				}
+			}
 		}
 		if(request === "closeNative"){
 			nativePort.disconnect();
@@ -103,9 +115,23 @@ chrome.runtime.onConnect.addListener(function(port){
 				}
 				else if(mess.code === "serial"){
 					mess.from = "native";
+
+					if(mess.result == "connected"){
+						//we have established a connection, remember which one
+						currCOMPort = mess.name.substring(3);
+					}
+					else if(mess.result == 'disconnected'){
+						currCOMPort = undefined;
+					}
+
 					//possible that we received some message through the COM port!
-					popupPort.postMessage(mess);
-					webpagePort.postMessage(mess);
+					if(popupPort){
+						popupPort.postMessage(mess);
+					}
+					if(webpagePort){
+						webpagePort.postMessage(mess);
+					}
+					
 				}
 				console.log(mess);
 			});
@@ -120,6 +146,7 @@ chrome.runtime.onConnect.addListener(function(port){
 			});
 		}
 
+
 		//We must handle user actions on the tab that used the extension, like refreshs, navigating to other tabs that still contain jsPsych,
 		//All the while trying to maintain a coherent connection to the native app and only a single instance of it
 		//attach the event listener only once, when the 'working tab' is remembered
@@ -133,7 +160,22 @@ chrome.runtime.onConnect.addListener(function(port){
 		});
 
 		//now we are ready to process messages from the popup UI and possibly pass them to the Native program
+		
 		popupPort.onMessage.addListener(process);
+
+		//make sure we keep track of when the popup window gets closed
+		popupPort.onDisconnect.addListener(function(port){
+			popupPort = undefined;
+		});
+
+		//we need to fetch the list of COM ports to initialize the popup UI
+		nativePort.postMessage({
+			target:'serial',
+			action:'list',
+			payload:'COM'
+		});
+
+
 		
 	}
 	//The code below deals only with communications from the web page (through messagepasser.js)
@@ -145,11 +187,14 @@ chrome.runtime.onConnect.addListener(function(port){
 		//start listening for messages
 		port.onMessage.addListener(process);
 
-		chrome.runtime.onMessage.addListener(process);
+		//chrome.runtime.onMessage.addListener(process);
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
 			nativePort.disconnect();
-			popupPort.disconnect();
+			if(popupPort){
+				popupPort.disconnect();
+			}
+			
 			nativePort = undefined;
 			popupPort = undefined;
 			//also, since the user changed to a new page, close the ui
