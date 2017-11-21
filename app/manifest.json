@@ -2,7 +2,7 @@
   "name": "jsPsychHardware",
   "version": "0.4",
   "manifest_version":2,
-  "description": "Allows jspsych to access hardware",
+  "description": "Allows browsers to access COM and LPT port hardware",
   "background": {
     "persistent": false,
     "scripts": ["background.js"]
