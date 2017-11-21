@@ -109,6 +109,10 @@ $(function(){
 	$("#serial-ports-list").change(function(evt){
 		serialState.removeClass("on off");
 		var portNmb = this.options[this.selectedIndex].value;
+		if(currCOMPort && currCOMPort == portNmb){
+			//user is trying to connect to a COM port currently in use...
+			return;
+		}
 		document.getElementById("state-serial").classList.add("loading");
 		if(portNmb != "None"){
 			
