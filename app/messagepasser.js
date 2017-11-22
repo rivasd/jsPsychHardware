@@ -33,7 +33,7 @@ document.addEventListener("jspsych", function(event) {
 //the extension can now send data back to the webpage!
 extensionport.onMessage.addListener(function(msg){
 	console.log(msg);
-	document.dispatchEvent(new CustomEvent("jspsych-hardware-message", {detail:msg})
+	document.dispatchEvent(new CustomEvent("jspsych-hardware-message", {detail:msg}))
 })
 
 

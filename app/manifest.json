@@ -1,6 +1,6 @@
 {
   "name": "jsPsychHardware",
-  "version": "0.4",
+  "version": "0.5",
   "manifest_version":2,
   "description": "Allows browsers to access COM and LPT port hardware",
   "background": {
