@@ -192,7 +192,11 @@ chrome.runtime.onConnect.addListener(function(port){
 		//chrome.runtime.onMessage.addListener(process);
 		//close all native connections if the web page calling this extension is unloaded
 		port.onDisconnect.addListener(function(){
-			nativePort.disconnect();
+
+			if(nativePort){
+				nativePort.disconnect();
+			}
+			
 			if(popupPort){
 				popupPort.disconnect();
 			}

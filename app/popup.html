@@ -7,37 +7,72 @@
 	<link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-	<img class="h-center" id="imgtitre" alt="jspsych" src="media/jspsych-logo-readme.jpg">
+	<div id="gridContainer">
+		<header>
+				<img class="h-center" id="imgtitre" alt="jspsych" src="media/jspsych-logo-readme.jpg">
+				<p id="jspsychhardware">jsPsychHardware</p>
+		</header>
+
+		<div id="lside" style="grid-area: lside"></div>
+		<div id="options" style="grid-area: main">
+			<div class="hardwareEntry">
+				<span class="toggle" id="parallel-setup">
+					<input type="checkbox" id="parallel-switch" name="set-name" class="switch-input">
+					<label for="parallel-switch" class="switch-label"></label>
+				</span>
+				<a href="http://www.radiosky.com/skypipehelp/V2/parallel_port_configuration.html" class="hardwareName"><span>Parallel Port</span></a>
+				<span class="hardwareInfo">
+					<input type="text"  id="parallel-info" maxlength="4" size="4">
+				</span>
+				
+			</div>
+			<div class="hardwareEntry">
+				<span class="toggle" id="serial-setup">
+					<input type="checkbox" id="serial-switch" name="set-name" class="switch-input">
+					<label for="serial-switch" class="switch-label"></label>
+				</span>
+				<span class="hardwareName">Serial</span>
+				<span class="hardwareInfo">
+					<select id="serial-info" >
+						<option></option>
+					</select>
+				</span>
+				
+			</div>
+			<div class="hardwareEntry">
+				<span class="toggle" id="socket-setup">
+					<input type="checkbox" id="socket-switch" name="set-name" class="switch-input">
+					<label for="socket-switch" class="switch-label"></label>
+				</span>
+				<span class="hardwareName">WebSocket</span>
+				<span class="hardwareInfo">
+						<input type="text"  id="socket-info" maxlength="4" size="4">
+				</span>
+				
+			</div>
+			<div class="hardwareEntry">
+				<span class="toggle" id="bluetooth-setup">
+					<input type="checkbox" id="bluetooth-switch" name="set-name" class="switch-input">
+					<label for="bluetooth-switch" class="switch-label"></label>
+				</span>
+				<span class="hardwareName">Bluetooth</span>
+				<span class="hardwareInfo">
+					<input type="text"  id="bluetooth-info" maxlength="4" size="4">
+				</span>
+				
+			</div>
+		</div>
+		<div id="rside" style="grid-area: rside"></div>
+
+		<footer></footer>
+		
+
+
+
+
+
+
+	</div>
 	
-	<form id="status-form">
-		<fieldset class="hardware-entry">
-			<table>
-				<tr class="hardware-setup" id="parallel-setup">
-					<td class="hardware-name label" id="parallel-name">Parallel Port</td>
-					
-					<td>
-						<input type="text" class="hardware-text" id="port-parallel" maxlength="4" size="4">
-						<a href="http://www.radiosky.com/skypipehelp/V2/parallel_port_configuration.html">?</a>
-					</td>
-					<td class="hardware-status">
-						<i class="fa fa-power-off" aria-hidden="true" id="state-parallel"></i>
-					</td>
-				</tr>
-				<tr class="hardware-setup" id="serial-setup">
-					<td class="label">
-						<label>Serial Port</label>
-					</td>
-					<td>
-						<select id="serial-ports-list">
-							<option></option>
-						</select>
-					</td>
-					<td class="hardware-status">
-						<i class="fa fa-power-off" aria-hidden="true" id="state-serial"></i>
-					</td>
-				</tr>
-			</table>
-		</fieldset>
-	</form>
 </body>
 </html>

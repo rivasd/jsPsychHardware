@@ -129,6 +129,8 @@ $(function(){
 			});
 		}
 	});
+
+	//attaching listeners for the websocket and 
 	
 
 	chrome.tabs.query({active:true, currentWindow:true}, init);
