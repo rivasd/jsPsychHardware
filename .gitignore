@@ -3,3 +3,5 @@
 /.pydevproject
 /.tern*
 
+/node_modules/
+dist/

@@ -1,6 +1,6 @@
 
-/**@type {JQuery} */
-var serialState;
+import style from './popup.css';
+
 
 /**@type {chrome.runtime.Port} */
 var backgroundPort;
@@ -20,7 +20,7 @@ function init(tabs){
 	//load the port address field with previously saved value
 	chrome.storage.local.get('port-parallel', function(items){
 		if(!chrome.runtime.lastError){
-			$("#port-parallel").val(items['port-parallel']);
+			document.getElementById("parallel-info").val(items['port-parallel']);
 		}
 		
 	});
@@ -37,19 +37,12 @@ function init(tabs){
 			var selectElem = document.getElementById("serial-ports-list");
 
 			if(msg.ports){
-				serialState.removeClass("loading");
+
 				//we have received an updated list of available COM ports, update the <select> element
-				var availablePorts = $("#serial-ports-list").empty();
-				availablePorts.append($("<option>",{
-					text: "None",
-					selected: "true",
-					value:"None"
-				}));
+				selectElem.innerHTML = "";
+				selectElem.add(Option("None", "None", "", "true"));
 				msg.ports.forEach(function(port){
-					availablePorts.append($("<option>", {
-						value: port.substring(3),
-						text: port
-					}));
+					selectElem.add(Option(port, port.substring(3)));
 				});
 
 				//now that we have the list of available ports, show the currently connected one if there is onw

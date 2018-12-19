@@ -96,7 +96,6 @@ chrome.runtime.onConnect.addListener(function(port){
 				// do nothing, scripts already injected
 			}
 			else{
-				chrome.tabs.executeScript(activeTab, {file:"jquery.js"});
 				chrome.tabs.executeScript(activeTab, {file:"messagepasser.js"});
 			}
 		});

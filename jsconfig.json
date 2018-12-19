@@ -8,8 +8,7 @@
     ],
     "typeAcquisition": {
         "include": [
-            "chrome",
-            "jquery"
+            "chrome"
         ]
     }
 }

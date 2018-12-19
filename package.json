@@ -1,0 +1,45 @@
+{
+  "name": "jspsychhardware",
+  "version": "1.0.0",
+  "description": "A Chrome Extension permitting jsPsych program to access local hardware",
+  "main": "app/background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --watch",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rivasd/jsPsychHardware.git"
+  },
+  "keywords": [
+    "jsPsych",
+    "chrome-extension",
+    "hardware",
+    "browser"
+  ],
+  "author": "Daniel Rivas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rivasd/jsPsychHardware/issues"
+  },
+  "homepage": "https://github.com/rivasd/jsPsychHardware#readme",
+  "devDependencies": {
+    "@types/chrome": "0.0.76",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.18.0",
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^2.0.1",
+    "file-loader": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "raw-loader": "^1.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.20.2",
+    "webpack-chrome-extension-reloader": "^1.0.1",
+    "webpack-cli": "^3.1.1"
+  },
+  "dependencies": {
+    "muse-js": "^3.1.0"
+  }
+}
