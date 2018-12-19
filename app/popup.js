@@ -51,60 +51,57 @@ function init(tabs){
 			}
 			else if(msg.result == "connected"){
 				selectElem.querySelector('option[value="' + msg.name.substring(3)+'"]').selected = true;
-				serialState.removeClass('loading').addClass("on");
+				//serialState.removeClass('loading').addClass("on");
 				currCOMPort = msg.name.substring(3);
 
 			}
 			else if(msg.result == "disconnected"){
-				serialState.removeClass("on off loading");
+				//serialState.removeClass("on off loading");
 			}
 			else if(msg.error){
-				serialState.removeClass("loading").addClass("off");
+				//serialState.removeClass("loading").addClass("off");
 			}
 		}
 	});
 
 	//build the list of available COM ports
-	serialState = $("#state-serial").addClass("loading");
-};
+	//serialState = $("#state-serial").addClass("loading");
+}
 
+document.addEventListener("DOMContentLoaded", function(){
 
-$(function(){
-	
-	var testcount =0;
-
-	$("#state-parallel").click(function(evt){
+	document.getElementById("parallel-switch").addEventListener("change", function(){
 		//TODO: check if already running
-		if($("#port-parallel").val()){
-			chrome.runtime.sendMessage({
-				target: 'parallel',
-				action: 'setup',
-				payload: "0x"+$("#port-parallel").val()
-			});
-			chrome.storage.local.set({
-				'port-parallel': $("#port-parallel").val()
-			});
-		};
-		
-		window.close();
-		$(this).hide();
-
+		if(this.checked){
+			if(document.getElementById("parallel-info").value){
+				chrome.runtime.sendMessage({
+					target: 'parallel',
+					action: 'setup',
+					payload: "0x"+document.getElementById("parallel-info").value
+				});
+				chrome.storage.local.set({
+					'port-parallel': document.getElementById("parallel-info").value
+				});
+			}
+		}
 	});
 	
-	$("a").click(function(evt){
-		chrome.tabs.create({url:this.href});
-		return false;
-	});
+	document.getElementsByTagName("a").forEach((elem) => {
+		elem.addEventListener("click",function(){
+			chrome.tabs.create({url:this.href});
+			return false;
+		})
+	})
 
 	//Implement opening the serial port whenever the user selects one from the available list
-	$("#serial-ports-list").change(function(evt){
-		serialState.removeClass("on off");
+	document.getElementById("serial-info").addEventListener("change", function(){
+		//serialState.removeClass("on off");
 		var portNmb = this.options[this.selectedIndex].value;
 		if(currCOMPort && currCOMPort == portNmb){
 			//user is trying to connect to a COM port currently in use...
 			return;
 		}
-		document.getElementById("state-serial").classList.add("loading");
+		//document.getElementById("state-serial").classList.add("loading");
 		if(portNmb != "None"){
 			
 			backgroundPort.postMessage({
@@ -124,7 +121,5 @@ $(function(){
 	});
 
 	//attaching listeners for the websocket and 
-	
-
 	chrome.tabs.query({active:true, currentWindow:true}, init);
 });
