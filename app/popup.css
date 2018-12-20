@@ -3,7 +3,7 @@ body {
 	height:100%;
 	margin:0;
 	min-width: 200px;
-	font-family: Roboto;
+	font-family: "Major Mono Display" monospace;
 }
 
 #gridContainer {

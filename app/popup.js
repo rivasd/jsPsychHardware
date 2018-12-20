@@ -19,8 +19,8 @@ function init(tabs){
 	
 	//load the port address field with previously saved value
 	chrome.storage.local.get('port-parallel', function(items){
-		if(!chrome.runtime.lastError){
-			document.getElementById("parallel-info").val(items['port-parallel']);
+		if(!chrome.runtime.lastError && items["port-parallel"]){
+			document.getElementById("parallel-info").value = items['port-parallel'];
 		}
 		
 	});
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 	
-	document.getElementsByTagName("a").forEach((elem) => {
+	document.querySelectorAll("a").forEach((elem) => {
 		elem.addEventListener("click",function(){
 			chrome.tabs.create({url:this.href});
 			return false;
@@ -120,6 +120,26 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	});
 
+	document.getElementById("bluetooth-switch").addEventListener("change", handleBluetooth);
+
 	//attaching listeners for the websocket and 
 	chrome.tabs.query({active:true, currentWindow:true}, init);
 });
+
+
+function handleBluetooth(){
+	if(this.checked){
+		backgroundPort.postMessage({
+			target: "extension",
+			action: "bluetooth",
+			payload: this.value
+		})
+	}
+	else{
+		backgroundPort.postMessage({
+			target: "extension",
+			action: "bluetooth",
+			payload: "stop"
+		})
+	}
+}

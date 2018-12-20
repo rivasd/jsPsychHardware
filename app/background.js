@@ -8,6 +8,7 @@
  * like this one that only executes when needed goes down the drain...
  */
 
+ import {MuseClient} from 'muse-js';
 
 //setup persistent store for addresses and state of multiple hardware
 chrome.storage.local.set({
@@ -22,6 +23,9 @@ var popupPort;
 
 /**@type {chrome.runtime.Port} */
 var webpagePort;
+
+/**@type {MuseClient} */
+var museClient;
 
 var activeTab;
 
@@ -63,6 +67,9 @@ function process(request, sender, sendResponse){
 						code:'serial'
 					});
 				}
+			}
+			else if(request.action == "bluetooth"){
+				handleBluetooth(request);
 			}
 		}
 		if(request === "closeNative"){
@@ -157,7 +164,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				nativePort = undefined;
 				activeTab = undefined;
 				currCOMPort = undefined;
-			};
+			}
 		});
 
 		//now we are ready to process messages from the popup UI and possibly pass them to the Native program
@@ -209,5 +216,21 @@ chrome.runtime.onConnect.addListener(function(port){
 	}
 });
 
+async function connectMuse() {
+	museClient = new MuseClient();
+	await museClient.connect();
+	await museClient.start();
 
+}
 
+function handleBluetooth(request){
+	if(request.payload == "muse"){
+		connectMuse();
+	}
+	else if(request.payload == "stop"){
+		if(museClient){
+			museClient.disconnect();
+		}
+		
+	}
+}
