@@ -8,6 +8,11 @@
 * @author Catherine Prevost
 */
 
+import {MuseConnection} from './muse';
+
+/**@type {MuseConnection} */
+let muse;
+
 //open communication to the background.js process of the extension
 
 chrome.runtime.onMessage.addListener(function(mess, sender, sendResponse){
@@ -34,6 +39,49 @@ document.addEventListener("jspsych", function(event) {
 extensionport.onMessage.addListener(function(msg){
 	console.log(msg);
 	document.dispatchEvent(new CustomEvent("jspsych-hardware-message", {detail:msg}))
+
+	if(msg.action == "bluetooth"){
+		if(msg.payload == "muse"){
+			
+			muse = new MuseConnection({
+				onLeave: () => {
+					extensionport.postMessage({
+						target:"popup",
+						action : "state",
+						payload: {bluetooth:false}
+					});
+				}
+			});
+			muse.then((client) => {
+				extensionport.postMessage({
+					target:"popup",
+					action : "state",
+					payload: {bluetooth:true}
+				})
+			})
+			.catch((reason) => {
+				extensionport.postMessage({
+					target:"popup",
+					action : "state",
+					payload: {bluetooth:false}
+				});
+				extensionport.postMessage({
+					error: reason
+				})
+			})
+		}
+		else if(msg.payload == "stop"){
+			if(muse){
+				muse.stop();
+				extensionport.postMessage({
+					target:"popup",
+					action: "state",
+					payload: {bluetooth:false}
+				})
+			}
+		}
+		
+	}
 })
 
 

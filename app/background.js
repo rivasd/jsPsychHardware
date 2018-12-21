@@ -8,7 +8,7 @@
  * like this one that only executes when needed goes down the drain...
  */
 
- import {MuseClient} from 'muse-js';
+
 
 //setup persistent store for addresses and state of multiple hardware
 chrome.storage.local.set({
@@ -24,12 +24,17 @@ var popupPort;
 /**@type {chrome.runtime.Port} */
 var webpagePort;
 
-/**@type {MuseClient} */
-var museClient;
-
+/**@type {chrome.tabs.Tab} */
 var activeTab;
 
 var currCOMPort;
+
+var state = {
+	parallel : false,
+	serial : false,
+	socket: false,
+	bluetooth: false
+}
 
 function process(request, sender, sendResponse){
 	//the sender might actually be a port, which screws with the check below. luckily the port will itself have a Sender object
@@ -54,18 +59,20 @@ function process(request, sender, sendResponse){
 			console.log("we got an empty message");
 			return;
 		}
-		else if(!(request.target === 'extension')){
+		else if(!(request.target === 'extension' || request.target == "state")){
 			nativePort.postMessage(request);
 		}
 		else if(request.target == 'extension'){
 			//do something extension-ish
-			if(request.action == 'state' && request.payload == 'serial' && senderPort){
-				if(currCOMPort){
-					senderPort.postMessage({
-						result: 'connected',
-						name: 'COM'+currCOMPort,
-						code:'serial'
-					});
+			if(request.action == 'state') {
+				if(request.payload == 'serial' && senderPort){
+					if(currCOMPort){
+						senderPort.postMessage({
+							result: 'connected',
+							name: 'COM'+currCOMPort,
+							code:'serial'
+						});
+					}
 				}
 			}
 			else if(request.action == "bluetooth"){
@@ -84,11 +91,19 @@ function process(request, sender, sendResponse){
 
 //start listening for a signal that jspsych is present on the page (sent by our tiny content-script injected on all pages)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-	if(sender.tab && request === 'jspsych-detected'){
-		chrome.pageAction.show(sender.tab.id);
+	if(sender.tab){
+		if(request === 'jspsych-detected'){
+			chrome.pageAction.show(sender.tab.id);
+		}
 	}
-	else if(request.tabId){
-		activeTab = request.tabId;
+	
+	else{
+		if(request.tabId){
+			activeTab = request.tabId;
+		}
+		if(request.target === "extension" && request.action === "state" && request.payload === "query"){
+			sendResponse(state);
+		}
 	}
 });
 
@@ -103,6 +118,7 @@ chrome.runtime.onConnect.addListener(function(port){
 				// do nothing, scripts already injected
 			}
 			else{
+				chrome.tabs.executeScript(activeTab, {file:"StreamSaver.js"});
 				chrome.tabs.executeScript(activeTab, {file:"messagepasser.js"});
 			}
 		});
@@ -160,7 +176,10 @@ chrome.runtime.onConnect.addListener(function(port){
 		chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
 			if(tabId === activeTab){
 				//close everything
-				nativePort.disconnect();
+				if(nativePort){
+					nativePort.disconnect();
+				}
+				
 				nativePort = undefined;
 				activeTab = undefined;
 				currCOMPort = undefined;
@@ -193,7 +212,7 @@ chrome.runtime.onConnect.addListener(function(port){
 		webpagePort = port;
 
 		//start listening for messages
-		port.onMessage.addListener(process);
+		port.onMessage.addListener(handleFromWebpage);
 
 		//chrome.runtime.onMessage.addListener(process);
 		//close all native connections if the web page calling this extension is unloaded
@@ -216,21 +235,28 @@ chrome.runtime.onConnect.addListener(function(port){
 	}
 });
 
-async function connectMuse() {
-	museClient = new MuseClient();
-	await museClient.connect();
-	await museClient.start();
 
-}
 
 function handleBluetooth(request){
-	if(request.payload == "muse"){
-		connectMuse();
+	webpagePort.postMessage(request);
+}
+
+function handleFromWebpage(request, sender, sendResponse){
+
+	if(sender.sender){
+		sender = sender.sender;
 	}
-	else if(request.payload == "stop"){
-		if(museClient){
-			museClient.disconnect();
-		}
-		
+
+	if(!(sender.id === chrome.runtime.id || (sender.tab && sender.tab.id === activeTab))) return;
+
+	//if this is about state, update it
+	if(request.action == "state"){
+		state = {...state, ...request.payload};
+	}
+}
+
+function handlePageLeave(){
+	if(webpagePort){
+
 	}
 }

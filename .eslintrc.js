@@ -34,7 +34,7 @@ module.exports = {
         "callback-return": "error",
         "camelcase": "error",
         "capitalized-comments": "off",
-        "class-methods-use-this": "error",
+        "class-methods-use-this": "off",
         "comma-dangle": "error",
         "comma-spacing": "off",
         "comma-style": [
@@ -50,7 +50,7 @@ module.exports = {
         "consistent-this": "off",
         "curly": "off",
         "default-case": "error",
-        "dot-location": "error",
+        "dot-location": "off",
         "dot-notation": [
             "error",
             {
@@ -84,7 +84,8 @@ module.exports = {
                 "before": true,
                 "overrides":{
                     "from":{"after":true},
-                    "import":{"after":true}
+                    "import":{"after":true},
+                    "export": {"after":true}
                 }
             }
         ],

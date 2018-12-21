@@ -26,8 +26,8 @@ module.exports = {
         path.resolve(__dirname, 'bower_components')
       ],
       loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
+      options: {
+        presets: ['@babel/preset-env']
       }
     },
     {
@@ -67,7 +67,8 @@ module.exports = {
         from: "app/media/*",
         to:"media/[name].[ext]",
         flatten: true
-      }
+      },
+      "app/StreamSaver.js"
     ])
   ]
 };

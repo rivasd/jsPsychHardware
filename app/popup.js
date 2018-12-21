@@ -7,6 +7,13 @@ var backgroundPort;
 
 var currCOMPort;
 
+var state = {
+	parallel : false,
+	serial : false,
+	socket: false,
+	bluetooth: false
+}
+
 function init(tabs){
 	
 	chrome.runtime.sendMessage({tabId:tabs[0].id});
@@ -60,9 +67,15 @@ function init(tabs){
 			}
 			else if(msg.error){
 				//serialState.removeClass("loading").addClass("off");
+				alert(error);
 			}
 		}
+		else if(msg.action === "state"){
+			renderState(msg.payload);
+		}
 	});
+
+	pingState();
 
 	//build the list of available COM ports
 	//serialState = $("#state-serial").addClass("loading");
@@ -132,7 +145,7 @@ function handleBluetooth(){
 		backgroundPort.postMessage({
 			target: "extension",
 			action: "bluetooth",
-			payload: this.value
+			payload: document.getElementById("bluetooth-info").value
 		})
 	}
 	else{
@@ -142,4 +155,19 @@ function handleBluetooth(){
 			payload: "stop"
 		})
 	}
+}
+
+function pingState(){
+	chrome.runtime.sendMessage({
+		target: "extension",
+		action: "state",
+		"payload": "query"
+	}, renderState)
+}
+
+function renderState(newState){
+	state = {...state, ...newState};
+	Object.entries(state).forEach(([key, val]) => {
+		document.getElementById(key+"-switch").checked = val;
+	})
 }
