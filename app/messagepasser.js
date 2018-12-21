@@ -43,7 +43,7 @@ extensionport.onMessage.addListener(function(msg){
 	if(msg.action == "bluetooth"){
 		if(msg.payload == "muse"){
 			
-			muse = new MuseConnection({
+			var museattempt = new MuseConnection({
 				onLeave: () => {
 					extensionport.postMessage({
 						target:"popup",
@@ -52,7 +52,8 @@ extensionport.onMessage.addListener(function(msg){
 					});
 				}
 			});
-			muse.then((client) => {
+			museattempt.then((client) => {
+				muse = client;
 				extensionport.postMessage({
 					target:"popup",
 					action : "state",

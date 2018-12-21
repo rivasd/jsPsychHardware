@@ -254,9 +254,3 @@ function handleFromWebpage(request, sender, sendResponse){
 		state = {...state, ...request.payload};
 	}
 }
-
-function handlePageLeave(){
-	if(webpagePort){
-
-	}
-}

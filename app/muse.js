@@ -49,9 +49,7 @@ class MuseConnection {
             
             
             this.startStreamingEvents();
-            
-
-
+            return this;
         })
     }
 
