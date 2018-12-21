@@ -114,6 +114,12 @@ class MuseConnection {
         this.streamWriter.close();
     }
 
+    addMarker(marker){
+        if(this.client){
+            this.client.injectMarker(marker);
+        }
+    }
+
 }
 
 

@@ -31,7 +31,11 @@ if(extensionport === undefined){
 //Communication will take place through a CustomEvent dispatched on the document object, so start listening!
 document.addEventListener("jspsych", function(event) {
 	var message = event.detail;
-	//simply relay it to the extension, FOR NOW I see no point in doing any computation here...
+	
+	if(message.action === "trigger" && muse){
+		muse.addMarker(message.payload);
+	}
+	//simply relay it to the extension
 	extensionport.postMessage(message);
 });
 
